@@ -1,0 +1,30 @@
+name: Appimage-Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: "0 0 * * 0"
+      
+jobs:
+  AppImage:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Create AppImage
+      run: |
+           sudo apt-get -y install desktop-file-utils
+           wget "https://raw.githubusercontent.com/AppImage/pkg2appimage/master/pkg2appimage"
+           bash -ex pkg2appimage Spotify
+
+    - name: Release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        title: AppImage
+        automatic_release_tag: stable
+        prerelease: false
+        draft: false
+        files: |
+          out/*.AppImage*
+        repo_token: ${{ github.token }}
